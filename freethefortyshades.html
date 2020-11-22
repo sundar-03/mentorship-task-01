@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<!--First task-->
+<html>
+<head>
+  <title>Free the forty shades</title>
+  <!-- Implementing style sheet-->
+  <!--Making the entire website background color black in body -->
+  <!--Second creating div for holding menu options and its styles-->
+  <!--Third is add options for buttons whose class is options and its styles-->
+  <style type="text/css">
+    body
+    {
+      background-color: #000000; 
+    }
+    #menu
+    {
+      width: 500px;
+      height: 300px;
+      margin: 0px auto;
+      border: 2px solid red;
+      border-style: dashed;
+      border-radius: 10px;
+      text-align: center;
+      color: red;
+      display: block;
+    }
+    .options
+    {
+      width: 100px;
+      height: 50px;
+      border-radius: 50%;
+      border: 2px solid red;
+      background-color: inherit;
+      color: white;
+    }
+    i
+    {
+      color: yellow;
+      font-size: 25px;
+    }
+    #score_area
+    {
+      width: 500px;
+      height: 50px;
+      text-align: center;
+      margin: 0px auto;
+      border: 2px solid red;
+      border-style: dashed;
+      border-radius: 10px;
+      display: none;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div id="menu">
+    <i>Free The Forty Shades</i>
+    <br>
+    <br>
+    <button class="options" onclick="play()">
+      PLAY
+    </button>
+    <br>
+    <br>
+    <button class="options">
+      OPTIONS
+    </button>
+    <br>
+    <br>
+    <button class="options">
+      QUIT
+    </button>
+  </div>
+  <br>
+  <br>
+  <div id="score_area">
+    
+  </div>
+  <br>
+  <br>
+  <div id="table_area">
+    
+  </div>
+</body>
+</html>
+<script type="text/javascript">
+var correct_value = 1; //correct start value if this correct value is clicked in cell then only convert
+var timer_is_on=0; //timer on is false
+var timer_count=0;//initial time count as zero
+ var t;
+
+function stop_count()
+{
+  clearTimeout(t);
+  timer_is_on = 0;
+}
+
+//start timer to count time
+function start_time()
+{
+  document.getElementById("score_area").innerHTML = "Your time is " +timer_count;
+      timer_count = ((10*timer_count)+1) ;
+      timer_count=timer_count/10.00;
+      t = setTimeout(start_time, 100);
+}
+
+ //timer function
+ function timer()
+ {
+    if(timer_is_on == 0)
+      timer_is_on=1;
+    document.getElementById("score_area").style.display="block";
+      start_time();
+ }
+
+   //function to generate array of numbers to be present in first and second table
+    function generate_array_of_numbers(start,end) {
+       var array =[]; //Generate the array
+       var i;
+       //Push the values with corresponding range
+    for(i=start;i<=end;i++)
+    array.push(i); 
+
+  //Return the array
+    return array ;
+    }
+
+    //function to get random index to get random values from array
+   function get_random_index(min,max)
+{
+    var step1=max-min+1;
+    var step2=Math.random()*step1;  // Math.random generate random number in range of [0,1]  
+    var result=Math.floor(step2)+min;  //floor function to convert it to integer
+    return result;
+}
+
+function get_random_number(numbersarray)
+{
+var randomindex=get_random_index(0,numbersarray.length -1);
+   var randomnumber = numbersarray[randomindex];
+   numbersarray.splice(randomindex ,1); // remove the obtained element from the array
+   return randomnumber;
+     }
+
+
+    function create_table()
+    {
+      var rows = window.prompt("Input number of rows", 1); //get no of rows
+
+      var columns = window.prompt("Input number of columns",1); //get no of columns
+
+      var product = rows*columns; //finding the product
+
+      //Generating those numbers to present at first table
+      var numbers_array_for_first_table = generate_array_of_numbers(1,product); 
+
+      //Generating those numbers to present at second table
+      var numbers_array_for_second_table = generate_array_of_numbers(product+1,2*product);
+
+      var i,j,random1,random2,cell; //declaring necessary varibles
+      // i,j for looping , random1 and random2 to store random values to be placed at cells of both tables
+      //cell to store cell
+      var tbl = document.createElement("table");//generate the table tag dynamically
+
+      //Attaching the attributes for that table
+      var atts = document.createAttribute("style"); 
+      atts.value = "position:relative; text-align:center; padding:2px; margin:3px 3px 3px 3px; block :center;" 
+
+      //setting those attributes for table
+      tbl.setAttributeNode(atts); 
+
+      //centering the table
+      tbl.style.left = ((window.innerWidth/2)-(columns*26)+"px");
+
+      //outer loop to generate no of rows
+       for (i = 0; i < rows; i++) 
+      {
+        //inner loop to generate columns
+   var row = tbl.insertRow(i); //inserting rows to table
+    for (j = 0; j < columns; j++)
+     {
+
+      cell = row.insertCell(j); //inserting cells
+       cell.height = "50px";  //cell height as 50 pixels
+       cell.width = "50px"; //cell width as 50 pixels
+        cell.style.backgroundColor = "black"; //cell background colour as black
+        cell.style.border ="2px"; //cell border size as 2 pixels
+        cell.style.borderStyle = "solid"; //cell border style as a solid border line
+        cell.style.borderColor = "red"; //cell border color as red
+        cell. style . color= "white"; //cell text colour as white
+        //getting the first random number
+        random1=get_random_number(numbers_array_for_first_table); 
+        //making cell data for first table cells as the random value
+        cell. innerHTML = random1;
+        //getting the second set of random values for each cells
+        random2=get_random_number(numbers_array_for_second_table);
+        //if the particular cell is onclicked it's value should be changed to next random number
+        // since loop values are passed asynchronous functions are used or IIFM(Instantaneously Invoked Functions)
+        cell.onclick = (function(random2,product)
+          {
+            return function()
+            {
+              //work only if the clicked cell has value same as correct value
+              if(correct_value == this.innerHTML)
+              { 
+                if(correct_value<=product) //for first table reduce the size of cell and place the next random number
+                {
+                   this.innerHTML=random2;  //place the next random number
+                   this.style.borderRadius = "20px"; //reduce the size 
+                   correct_value+=1;  // increase the correct value by 1 to point the next correct value
+                }
+                else if(correct_value != (2*product))
+                {
+                    this.style.color="red";  //make text as red
+                    this.style.backgroundColor = "red"; //make the entirecell as red
+                    correct_value+=1; // increase the correct value by 1 to point the next correct value
+                }
+                else //if the whole table is completed
+                { 
+                    var tables = document.getElementsByTagName("table");  //get the table
+                    if(tables[0])  //if table exist
+                      tables[0].parentNode.removeChild(tables[0]); //delete the table
+                    stop_count();
+                }
+              }
+            }
+          })(random2,product);
+      } 
+      } 
+      document.getElementById("table_area").appendChild(tbl);
+
+    }
+
+    //function to start the table and set timer
+  function play() {
+    create_table(); //Generate table
+    timer(); //Start the timer
+  }
+</script>
